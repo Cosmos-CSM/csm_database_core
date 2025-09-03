@@ -4,7 +4,7 @@ using System.Reflection;
 using CSM_Foundation_Core;
 using CSM_Foundation_Core.Utils;
 
-using CSM_Foundation_Database.Entity.Bases;
+using CSM_Foundation_Database.Entities.Bases;
 using CSM_Foundation_Database.Exceptions;
 using CSM_Foundation_Database.Models;
 using CSM_Foundation_Database.Utilitites;

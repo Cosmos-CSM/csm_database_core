@@ -4,7 +4,7 @@ using CSM_Foundation.Database;
 
 using CSM_Foundation_Core.Convertion;
 
-namespace CSM_Foundation_Database.Entity.Bases;
+namespace CSM_Foundation_Database.Entities.Bases;
 
 
 /// <summary>

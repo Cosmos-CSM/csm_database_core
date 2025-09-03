@@ -1,4 +1,4 @@
-﻿namespace CSM_Foundation_Database.Entity.Bases;
+﻿namespace CSM_Foundation_Database.Entities.Bases;
 
 /// <summary>
 ///     [Interface] for Entities that are [History] tracked and contains historical information.

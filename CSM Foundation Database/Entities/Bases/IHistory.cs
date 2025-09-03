@@ -1,6 +1,6 @@
 ﻿using CSM_Foundation.Database;
 
-namespace CSM_Foundation_Database.Entity.Bases;
+namespace CSM_Foundation_Database.Entities.Bases;
 
 /// <summary>
 ///     [Interface] for History entities implementations.
