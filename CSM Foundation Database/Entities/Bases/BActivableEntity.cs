@@ -6,7 +6,7 @@ namespace CSM_Foundation_Database.Entities.Bases;
 /// <summary>
 ///     Represents an <see cref="IEntity"/> with enablement control.
 /// </summary>
-public interface IEnabledEntity 
+public interface IActivableEntity
     : IEntity {
 
     /// <summary>
@@ -18,7 +18,7 @@ public interface IEnabledEntity
 /// <summary>
 ///     Represents an <see cref="IEntity"/> with enablement control.
 /// </summary>
-public abstract class BEnabledEntity
+public abstract class BActivableEntity
     : BEntity, IEntity {
 
     public bool IsEnabled { get; set; } = false;
