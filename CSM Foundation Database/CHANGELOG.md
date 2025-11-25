@@ -1,5 +1,21 @@
 # CSM Foundation Database CHANGELOG
 
+## [2.0.0] - 24.11-2025
+
+### Changed
+
+- File and abstraction organizations.
+- Renaming of concepts.
+- Added a way to get the [Sign] directly from [IDatabase] fro Testing Classes.
+
+#### Dependencies
+
+| Package                                 | Previous Version | New Version     |
+|:----------------------------------------|:----------------:|:---------------:|
+| CSM.Foundation.Core                     | 1.3.0            | 2.0.0           |
+| Microsoft.EntityFrameworkCore           | 9.0.8            | 9.0.8           |
+| Microsoft.EntityFrameworkCore.SqlServer | 9.0.8            | 9.0.8           |
+
 ## [1.2.0] - 03.09-2025
 
 ### Added

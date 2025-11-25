@@ -1,6 +1,6 @@
 # CSM Foundation Database Testing CHANGELOG
 
-## [1.0.1] - 24.11-2025
+## [2.0.0] - 24.11-2025
 
 ### Added
 
