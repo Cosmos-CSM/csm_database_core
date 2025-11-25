@@ -1,8 +1,8 @@
-﻿using CSM_Foundation.Database;
+﻿using CSM_Database_Core.Core.Exceptions;
+using CSM_Database_Core.Entities.Abstractions.Bases;
+using CSM_Database_Core.Entities.Abstractions.Interfaces;
 
-using CSM_Foundation_Database.Entities.Models;
-
-namespace CSM_Foundation_Database.Entities.Models.Output;
+namespace CSM_Database_Core.Entities.Models.Output;
 
 /// <summary>
 ///     [Record] that stores the information about a batch operation output result.
@@ -21,7 +21,7 @@ public record BatchOperationOutput<T>
     /// <summary>
     ///     Collection of batch operation failures. 
     /// </summary>
-    public EntityOperationFailure<T>[] Failures { get; init; }
+    public EntityError<T>[] Failures { get; init; }
 
     /// <summary>
     ///     Whether at least one operation iteration has failed.
@@ -48,7 +48,7 @@ public record BatchOperationOutput<T>
     /// </summary>
     public int SuccessesCount { get; private set; }
 
-    public BatchOperationOutput(T[] Successes, EntityOperationFailure<T>[] Failures) {
+    public BatchOperationOutput(T[] Successes, EntityError<T>[] Failures) {
         this.Successes = Successes;
         this.Failures = Failures;
 
