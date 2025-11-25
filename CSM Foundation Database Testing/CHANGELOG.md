@@ -1,5 +1,25 @@
 # CSM Foundation Database Testing CHANGELOG
 
+## [2.0.0] - 24.11-2025
+
+### Added
+
+- Package initialization.
+
+### Changed
+
+- Renaming of abstractions and organization.
+- Renaming of [Q_EntityValidations] to [TestingEntityBase] 
+
+#### Dependencies
+
+| Package                                 | Previous Version | New Version     |
+|:----------------------------------------|:----------------:|:---------------:|
+| CSM.Foundation.Core                     | 1.2.1            | 1.3.0           |
+| xunit									  | 2.9.3            | 2.9.3           |
+| xunit.SkippableFact   				  | --.--.--         | 1.5.23          |
+
+
 ## [1.0.0] - 06.08-2025
 
 ### Added
@@ -15,8 +35,4 @@
 | Package                                 | Previous Version | New Version     |
 |:----------------------------------------|:----------------:|:---------------:|
 | CSM.Foundation.Core                     | --.--.--         | 1.2.1           |
-| Microsoft.EntityFrameworkCore           | --.--.--         | 9.0.8           |
-| Microsoft.EntityFrameworkCore.SqlServer | --.--.--         | 9.0.8           |
 | xunit									  | --.--.--         | 2.9.3           |
-
-### Removed

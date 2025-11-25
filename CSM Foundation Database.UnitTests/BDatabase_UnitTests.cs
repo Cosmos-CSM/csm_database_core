@@ -1,24 +1,16 @@
-﻿using CSM_Foundation.Database;
-
-using CSM_Foundation_Database.Exceptions;
+﻿using CSM_Database_Core;
+using CSM_Database_Core.Core.Errors;
+using CSM_Database_Core.Core.Models;
+using CSM_Database_Core.Entities.Abstractions.Interfaces;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace CSM_Foundation_Database.UnitTests;
-
-/// <summary>
-///     Represents an <see cref="IEntity"/> with an activator reference mock.
-/// </summary>
-[ActivatorReference(typeof(EntityMock_ReferencedInterface))]
-interface IReferencedEntity
-    : IEntity {
-
-}
+namespace UnitTests;
 
 /// <summary>
 ///     Represents an <see cref="IEntity"/> with unreferenced entity mock.
 /// </summary>
-interface IUnrefrencedEntity 
+interface IUnrefrencedEntity
     : IEntity {
 
 }
@@ -27,17 +19,17 @@ interface IUnrefrencedEntity
 ///     Represents an <see cref="IEntity"/> mock implementation for a referenced interface scenario.
 /// </summary>
 class EntityMock_ReferencedInterface
-    : BEntity {
+    : EntityBase {
 
     public override Type Database { get; init; } = typeof(DbContext);
 }
 
 /// <summary>
-///     Represents a <see cref="BDatabase{TDatabases}"/> implementation used as an internal mock
+///     Represents a <see cref="DatabaseBase{TDatabases}"/> implementation used as an internal mock
 ///     for unit testing, with referenced interface scenario.
 /// </summary>
 class BDatabaseMock_ReferencedInterface
-    : BDatabase<DbContext> {
+    : DatabaseBase<DbContext> {
 
 
     public DbSet<IReferencedEntity> EntityMock { get; set; } = default!;
@@ -48,7 +40,7 @@ class BDatabaseMock_ReferencedInterface
     public BDatabaseMock_ReferencedInterface()
         : base(
                 "CSMST",
-                new Models.ConnectionOptions {
+                new ConnectionOptions {
                     Host = "",
                     Name = "",
                     User = "",
@@ -58,17 +50,17 @@ class BDatabaseMock_ReferencedInterface
     }
 
 
-    public new BEntity[] ValidateSets() {
+    public new EntityBase[] ValidateSets() {
         return base.ValidateSets();
     }
 }
 
 /// <summary>
-///     Represents a <see cref="BDatabase{TDatabases}"/> implementation used as an internal mock
+///     Represents a <see cref="DatabaseBase{TDatabases}"/> implementation used as an internal mock
 ///     for unit testing, with unreferenced interface scenario.
 /// </summary>
 class BDatabaseMock_UnreferencedInterface
-    : BDatabase<DbContext> {
+    : DatabaseBase<DbContext> {
 
 
     public DbSet<IUnrefrencedEntity> EntityMock { get; set; } = default!;
@@ -79,7 +71,7 @@ class BDatabaseMock_UnreferencedInterface
     public BDatabaseMock_UnreferencedInterface()
         : base(
                 "CSMST",
-                new Models.ConnectionOptions {
+                new ConnectionOptions {
                     Host = "",
                     Name = "",
                     User = "",
@@ -88,23 +80,20 @@ class BDatabaseMock_UnreferencedInterface
             ) {
     }
 
-
-    public new BEntity[] ValidateSets() {
+    public new CSM_Database_Core.EntityBase[] ValidateSets() {
         return base.ValidateSets();
     }
 }
 
 /// <summary>
-///     Represents a tests class for <see cref="BDatabase{TDatabases}"/> base implementation.
+///     Represents a tests class for <see cref="DatabaseBase{TDatabases}"/> base implementation.
 /// </summary>
 public class BDatabase_UnitTests {
-
-
     [Fact(DisplayName = "[ValidateSets]: Activation success with referenced interface")]
     public void ValidateSetsA() {
         BDatabaseMock_ReferencedInterface mock = new();
 
-        BEntity[] contextEntities = mock.ValidateSets();
+        CSM_Database_Core.EntityBase[] contextEntities = mock.ValidateSets();
 
         Assert.Single(contextEntities);
     }
@@ -113,7 +102,7 @@ public class BDatabase_UnitTests {
     public void ValidateSetsB() {
         BDatabaseMock_UnreferencedInterface mock = new();
 
-        XDatabase exception = Assert.Throws<XDatabase>(mock.ValidateSets);
-        Assert.Equal(XDatabaseEvents.INTERFACE_UNCONFIGURED, exception.Event);
+        DatabaseError exception = Assert.Throws<DatabaseError>(mock.ValidateSets);
+        Assert.Equal(DatabaseErrorEvents.INTERFACE_UNCONFIGURED, exception.Event);
     }
 }
