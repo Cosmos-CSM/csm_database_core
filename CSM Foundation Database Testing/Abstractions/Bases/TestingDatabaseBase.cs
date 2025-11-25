@@ -33,7 +33,7 @@ public abstract class TestingDatabaseBase<TDatabase>
     ///     Custom identifier for multiple database testing solutions.
     /// </param>
     public TestingDatabaseBase(string Sign = "DB") {
-        _database = DatabaseUtilities.Q_Construct<TDatabase>(Sign);
+        _database = DatabaseUtils.Q_Construct<TDatabase>(Sign);
     }
 
     [Fact]

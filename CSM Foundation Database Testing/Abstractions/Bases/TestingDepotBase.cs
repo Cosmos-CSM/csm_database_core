@@ -2,16 +2,13 @@
 using System.Reflection;
 
 using CSM_Database_Core;
+using CSM_Database_Core.Core.Errors;
 using CSM_Database_Core.Core.Utilitites;
-using CSM_Database_Core.Depots;
-using CSM_Database_Core.Depots.IDepot_Read;
-using CSM_Database_Core.Depots.IDepot_Update;
-using CSM_Database_Core.Depots.IDepot_View;
-using CSM_Database_Core.Depots.IDepot_View.ViewFilters;
+using CSM_Database_Core.Depots.Abstractions.Bases;
+using CSM_Database_Core.Depots.Abstractions.Interfaces;
+using CSM_Database_Core.Depots.Models;
+using CSM_Database_Core.Depots.ViewFilters;
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
-using CSM_Database_Core.Entities.Models;
-using CSM_Database_Core.Entities.Models.Input;
-using CSM_Database_Core.Entities.Models.Output;
 
 using CSM_Database_Testing.Disposing.Abstractions.Bases;
 
@@ -20,7 +17,7 @@ using Xunit;
 namespace CSM_Database_Testing.Abstractions.Bases;
 
 /// <summary>
-///     [Abstract] class for Quality Depots implementations. This are classes that tests the functionallity quality of a certain <see cref="BDepot{TDatabase, TEntity}"/>, providing
+///     [Abstract] class for Quality Depots implementations. This are classes that tests the functionallity quality of a certain <see cref="DepotBase{TDatabase, TEntity}"/>, providing
 ///     default built-in tests for all these implementations.
 /// </summary>
 /// <typeparam name="TEntity">
@@ -69,11 +66,11 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
         : base(
             [
                 ..factories,
-                () => database?.Invoke() ?? DatabaseUtilities.Q_Construct<TDatabase>(sign)
+                () => database?.Invoke() ?? DatabaseUtils.Q_Construct<TDatabase>(sign)
             ]
         ) {
 
-        Database = (TDatabase)(database?.Invoke() ?? DatabaseUtilities.Q_Construct<TDatabase>(sign));
+        Database = (TDatabase)(database?.Invoke() ?? DatabaseUtils.Q_Construct<TDatabase>(sign));
         Depot = (TDepot)Activator.CreateInstance(typeof(TDepot), Database, null)!;
 
         PropertyInfo[] entityProperties = typeof(TEntity).GetProperties();

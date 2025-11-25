@@ -104,7 +104,7 @@ public class TestingDataHandlerBase
 
         DbContext database = GetDatabase(Entity.Database);
 
-        Entity = DatabaseUtilities.SanitizeEntity(database, Entity);
+        Entity = DatabaseUtils.SanitizeEntity(database, Entity);
         database.Set<TEntity2>().Add(Entity);
         database.SaveChanges();
 
@@ -158,7 +158,7 @@ public class TestingDataHandlerBase
         for (int i = 0; i < Quantity; i++) {
 
             TEntity2 entity = RunEntityFactory(EntityFactory);
-            entity = DatabaseUtilities.SanitizeEntity(database, entity);
+            entity = DatabaseUtils.SanitizeEntity(database, entity);
             entities.Add(entity);
         }
 

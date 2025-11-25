@@ -52,7 +52,7 @@ public abstract partial class DatabaseBase<TDatabases>
         : base() {
 
         _logsOn = logsOn;
-        _connection = DatabaseUtilities.Retrieve(Sign);
+        _connection = DatabaseUtils.Retrieve(Sign);
     }
 
     /// <summary>
@@ -89,7 +89,7 @@ public abstract partial class DatabaseBase<TDatabases>
         : base(dbOptions) {
 
         _logsOn = logsOn;
-        _connection = DatabaseUtilities.Retrieve(Sign);
+        _connection = DatabaseUtils.Retrieve(Sign);
     }
 
     /// <summary>
@@ -127,7 +127,7 @@ public abstract partial class DatabaseBase<TDatabases>
         : base() {
 
         Sign = sign;
-        _connection = DatabaseUtilities.Retrieve(Sign);
+        _connection = DatabaseUtils.Retrieve(Sign);
     }
 
     /// <summary>
@@ -171,7 +171,7 @@ public abstract partial class DatabaseBase<TDatabases>
         : base(dbOptions) {
 
         Sign = sign;
-        _connection = DatabaseUtilities.Retrieve(sign);
+        _connection = DatabaseUtils.Retrieve(sign);
         _logsOn = logsOn;
     }
 

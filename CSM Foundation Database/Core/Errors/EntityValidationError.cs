@@ -1,15 +1,52 @@
-﻿namespace CSM_Database_Core.Core.Errors;
+﻿using CSM_Database_Core.Depots.Models;
 
+using CSM_Foundation_Core.Errors.Abstractions.Bases;
 
+namespace CSM_Database_Core.Core.Errors;
+
+/// <summary>
+///     Represents <see cref="EntityValidationError"/> events.
+/// </summary>
+public enum EntityValidationErrorEvents {
+
+    /// <summary>
+    ///     Event when entity read validation has failed.
+    /// </summary>
+    READ_FAILED,
+
+    /// <summary>
+    ///     Event when entity write validation has failed.
+    /// </summary>
+    WRITE_FAILED,
+}
+
+/// <summary>
+///     Represents and error occurred during entity validation.
+/// </summary>
 public class EntityValidationError
-    : Exception {
+    : ErrorBase<EntityValidationErrorEvents> {
 
-    public Type Set;
-    public (string Property, XIValidator_Evaluate[])[] Unvalidations;
+    /// <summary>
+    ///     Runtime type of the Entity that failed.
+    /// </summary>
+    public Type EntityType;
 
-    public EntityValidationError(Type Set, bool IsRead, (string Property, XIValidator_Evaluate[])[] Unvalidations)
-        : base($"{(IsRead ? "Evaluate Reading" : "Evluate Writting")} failed for ({Set}) with ({Unvalidations.Length}) faults. [{ string.Join(" | ", Unvalidations.Select(i => $"{{{i.Property}}} ({i.Item2[0].Message})")) }]") {
-        this.Set = Set;
-        this.Unvalidations = Unvalidations;
+    /// <summary>
+    ///     Validations results. 
+    /// </summary>
+    public PropertyValidationResult[] Results;
+
+    /// <summary>
+    ///     Creates a new instance.
+    /// </summary>
+    /// <param name="entityType">
+    public EntityValidationError(Type entityType, EntityValidationErrorEvents @event, PropertyValidationResult[] results)
+        : base($"Entity ({entityType}) validation has failed.", @event) {
+
+        Results = results;
+        EntityType = entityType;
+
+        Data.Add(nameof(Results), results);
+        Data.Add(nameof(EntityType), entityType);
     }
 }
