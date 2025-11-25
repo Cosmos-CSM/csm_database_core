@@ -2,7 +2,7 @@
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 using CSM_Database_Core.Entities.Models.Input;
 
-namespace CSM_Database_Core.Depot.IDepot_Update;
+namespace CSM_Database_Core.Depots.IDepot_Update;
 
 /// <summary>
 ///     [Interface] describing [Update] actions for [Depot] implementations.

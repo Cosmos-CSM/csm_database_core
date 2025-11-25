@@ -3,12 +3,11 @@ using System.Reflection;
 
 using CSM_Database_Core;
 using CSM_Database_Core.Core.Utilitites;
-using CSM_Database_Core.Depot;
-using CSM_Database_Core.Depot.IDepot_Read;
-using CSM_Database_Core.Depot.IDepot_Update;
-using CSM_Database_Core.Depot.IDepot_View;
-using CSM_Database_Core.Depot.IDepot_View.ViewFilters;
 using CSM_Database_Core.Depots;
+using CSM_Database_Core.Depots.IDepot_Read;
+using CSM_Database_Core.Depots.IDepot_Update;
+using CSM_Database_Core.Depots.IDepot_View;
+using CSM_Database_Core.Depots.IDepot_View.ViewFilters;
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 using CSM_Database_Core.Entities.Models;
 using CSM_Database_Core.Entities.Models.Input;
@@ -419,7 +418,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
     public virtual async Task UpdateB() {
         TEntity sample = RunEntityFactory(EntityFactory);
 
-        XDepot<TEntity> depotException = await Assert.ThrowsAsync<XDepot<TEntity>>(
+        DepotError<TEntity> depotException = await Assert.ThrowsAsync<DepotError<TEntity>>(
                 async () => {
                     UpdateOutput<TEntity> updateOutput = await Depot.Update(
                 new QueryInput<TEntity, UpdateInput<TEntity>> {
@@ -431,7 +430,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
                 }
             );
 
-        Assert.Equal(XDepotEvents.CREATE_DISABLED, depotException.Event);
+        Assert.Equal(DepotErrorEvents.CREATE_DISABLED, depotException.Event);
     }
 
     [Fact(DisplayName = $"[Update Entity]: Throws Unfound exception situation")]
@@ -439,7 +438,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
         TEntity sample = RunEntityFactory(EntityFactory);
         sample.Id = await GeneratePointer();
 
-        XDepot<TEntity> depotException = await Assert.ThrowsAsync<XDepot<TEntity>>(
+        DepotError<TEntity> depotException = await Assert.ThrowsAsync<DepotError<TEntity>>(
                 async () => {
                     UpdateOutput<TEntity> updateOutput = await Depot.Update(
                         new QueryInput<TEntity, UpdateInput<TEntity>> {
@@ -450,7 +449,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
                     );
                 }
             );
-        Assert.Equal(XDepotEvents.UNFOUND, depotException.Event);
+        Assert.Equal(DepotErrorEvents.UNFOUND, depotException.Event);
     }
 
     [Fact(DisplayName = $"[Update Entity]: Entity gets updated correctly")]
@@ -504,13 +503,13 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
     public virtual async Task DeleteA() {
         long unexistPointer = await GeneratePointer(true);
 
-        XDepot<TEntity> depotException = await Assert.ThrowsAsync<XDepot<TEntity>>(
+        DepotError<TEntity> depotException = await Assert.ThrowsAsync<DepotError<TEntity>>(
                 async () => {
                     await Depot.Delete(unexistPointer);
                 }
             );
 
-        Assert.Equal(XDepotEvents.UNFOUND, depotException.Event);
+        Assert.Equal(DepotErrorEvents.UNFOUND, depotException.Event);
     }
 
     [Fact(DisplayName = $"[Delete Entity]: Deletes correctly an Entity with a given Id")]

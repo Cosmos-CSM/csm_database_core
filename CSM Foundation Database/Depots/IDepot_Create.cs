@@ -2,7 +2,7 @@
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 using CSM_Database_Core.Entities.Models.Output;
 
-namespace CSM_Database_Core.Depot;
+namespace CSM_Database_Core.Depots;
 
 
 /// <summary>

@@ -1,16 +1,15 @@
-﻿using CSM_Database_Core.Entities.Abstractions.Bases;
-using CSM_Database_Core.Entities.Abstractions.Interfaces;
+﻿using CSM_Database_Core.Entities.Abstractions.Interfaces;
 
 using CSM_Foundation_Core;
-using CSM_Foundation_Core.Exceptions;
-using CSM_Foundation_Core.Exceptions.Models;
+using CSM_Foundation_Core.Errors.Abstractions.Bases;
+using CSM_Foundation_Core.Errors.Models;
 
-namespace CSM_Database_Core.Depot;
+namespace CSM_Database_Core.Depots;
 
 /// <summary>
-///     Represents the <see cref="XDepot{TEntity}"/> trigger events.
+///     Represents the <see cref="DepotError{TEntity}"/> trigger events.
 /// </summary>
-public enum XDepotEvents {
+public enum DepotErrorEvents {
     /// <summary>
     ///     Used when a searched <see cref="IEntity"/> wasn't found.
     /// </summary>
@@ -26,15 +25,15 @@ public enum XDepotEvents {
 /// <summary>
 ///     Represents an exception at <see cref="IDepot{TEntity}"/> operation events.
 /// </summary>
-public class XDepot<TEntity>
-    : BException<XDepotEvents>
+public class DepotError<TEntity>
+    : ErrorBase<DepotErrorEvents>
     where TEntity : IEntity {
 
     /// <summary>
     ///     Creates a new instance.
     /// </summary>
     /// <param name="event">
-    ///     The <see cref="XDepotEvents"/> that triggered the exception.
+    ///     The <see cref="DepotErrorEvents"/> that triggered the exception.
     /// </param>
     /// <param name="searchContext">
     ///     Depot transaction search argument.
@@ -45,11 +44,11 @@ public class XDepot<TEntity>
     /// <param name="feedback">
     ///     Whether the exception event has specific user feedback messages to display.
     /// </param>
-    public XDepot(
-            XDepotEvents @event,
+    public DepotError(
+            DepotErrorEvents @event,
             string searchContext = "",
             Exception? exception = null,
-            ExceptionFeedback[]? feedback = null
+            ErrorFeedback[]? feedback = null
         )
         : base(
                 $"[Depot]: ({@event})", @event, exception, feedback,
@@ -66,14 +65,14 @@ public class XDepot<TEntity>
             ) {
     }
 
-    protected override Dictionary<XDepotEvents, string> BuildAdviseContext() {
-        return new Dictionary<XDepotEvents, string> {
+    protected override Dictionary<DepotErrorEvents, string> BuildAdviseContext() {
+        return new Dictionary<DepotErrorEvents, string> {
             {
-                XDepotEvents.UNFOUND,
+                DepotErrorEvents.UNFOUND,
                 $"({typeof(TEntity).Name}) not found"
             },
             {
-                XDepotEvents.CREATE_DISABLED,
+                DepotErrorEvents.CREATE_DISABLED,
                 $"{ Constants.Messages.DEFAULT_USER_ADVISE }"
             }
         };

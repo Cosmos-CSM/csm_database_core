@@ -2,13 +2,13 @@
 using System.Reflection;
 
 using CSM_Database_Core.Abstractions.Interfaces;
-using CSM_Database_Core.Core.Exceptions;
+using CSM_Database_Core.Core.Errors;
 using CSM_Database_Core.Core.Models;
 using CSM_Database_Core.Core.Utilitites;
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 
-using CSM_Foundation_Core;
-using CSM_Foundation_Core.Utils;
+using CSM_Foundation_Core.Abstractions.Bases;
+using CSM_Foundation_Core.Core.Utils;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -222,8 +222,8 @@ public abstract partial class DatabaseBase<TDatabases>
 
         foreach (PropertyInfo dbSet in dbSets) {
             Type generic = dbSet.PropertyType.GetGenericArguments()[0]
-                ?? throw new XDatabase(
-                        XDatabaseEvents.WRONG_DBSET_ENTITY,
+                ?? throw new DatabaseError(
+                        DatabaseErrorEvents.WRONG_DBSET_ENTITY,
                         new Dictionary<string, object?> {
                                 { "DbSet", dbSet.Name }
                             }
@@ -424,7 +424,7 @@ public abstract partial class DatabaseBase<TDatabases>
 
 /// <inheritdoc cref="Entities.Abstractions.Bases.BEntity"/>
 public abstract partial class EntityBase
-    : BObject<IEntity>, IEntity {
+    : ObjectBase<IEntity>, IEntity {
 
     /// <summary>
     ///     Describe to the Entity Framework manager how to handle the [Entity] object, its proeprties and relations, instructing

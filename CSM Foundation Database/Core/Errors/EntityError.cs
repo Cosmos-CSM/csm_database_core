@@ -1,8 +1,8 @@
 ﻿using CSM_Database_Core.Entities.Abstractions.Interfaces;
 
-using CSM_Foundation_Core.Exceptions;
+using CSM_Foundation_Core.Errors.Abstractions.Bases;
 
-namespace CSM_Database_Core.Core.Exceptions;
+namespace CSM_Database_Core.Core.Errors;
 
 /// <summary>
 ///     Represents <see cref="EntityError{TEntity}"/> exception events.
@@ -36,7 +36,7 @@ public enum EntityErrorEvents {
 ///     Type of the <see cref="IEntity"/> that failed.
 /// </typeparam>
 public class EntityError<TEntity>
-    : BException<EntityErrorEvents>
+    : ErrorBase<EntityErrorEvents>
     where TEntity : IEntity {
 
     /// <summary>

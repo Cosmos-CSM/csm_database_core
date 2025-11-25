@@ -3,17 +3,17 @@ using System.Text.Json;
 
 using CSM_Database_Core.Core.Attributes;
 using CSM_Database_Core.Core.Models;
-using CSM_Database_Core.Entities.Abstractions.Bases;
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 
 using CSM_Foundation_Core;
-using CSM_Foundation_Core.Exceptions;
-using CSM_Foundation_Core.Utils;
+using CSM_Foundation_Core.Core.Exceptions;
+using CSM_Foundation_Core.Core.Utils;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace CSM_Database_Core.Core.Utilitites;
+
 public class DatabaseUtilities {
     const string DirectoryName = ".Connection";
     const string QualityPrefix = "quality";
@@ -147,14 +147,14 @@ public class DatabaseUtilities {
             bool isEntity = relationValue is IEntity;
 
             if (!isEntity && !isCollection) {
-                throw new XSystem($"Entity relation integrity problem, relation has [Relation] attribute but is not a IEnumerable<IEntity> neither IEntity assignable relation", null);
+                throw new SystemError($"Entity relation integrity problem, relation has [Relation] attribute but is not a IEnumerable<IEntity> neither IEntity assignable relation", null);
             }
 
             if (isEntity) {
                 IEntity relEntity = (IEntity)relationValue;
 
                 if (relEntity.Id <= 0) {
-                    throw new XSystem($"Dependencies aren't allowed to be created on main Entity creation", null);
+                    throw new SystemError($"Dependencies aren't allowed to be created on main Entity creation", null);
                 }
 
                 IQueryable<IEntity> dbSet = GetDbSet(relEntity.GetType());
@@ -163,7 +163,7 @@ public class DatabaseUtilities {
                         entity => entity.Id == relEntity.Id
                     )
                     .FirstOrDefault()
-                    ?? throw new XSystem($"Couldn't find relation entity ({relEntity.GetType().Name})[{relEntity.Id}]", null);
+                    ?? throw new SystemError($"Couldn't find relation entity ({relEntity.GetType().Name})[{relEntity.Id}]", null);
 
                 relationProperty.SetValue(entity, dbRelEntity);
                 EntityEntry entityEntry = database.Entry(dbRelEntity);
@@ -186,7 +186,7 @@ public class DatabaseUtilities {
                             entity => entity.Id == relEntity.Id
                         )
                         .FirstOrDefault()
-                        ?? throw new XSystem($"Couldn't find relation entity ({relEntity.GetType().Name})[{relEntity.Id}]", null); ;
+                        ?? throw new SystemError($"Couldn't find relation entity ({relEntity.GetType().Name})[{relEntity.Id}]", null); ;
 
                     EntityEntry relEntityEntry = database.Entry(dbRelEntity);
                     if (relEntityEntry.State == EntityState.Detached) {
@@ -204,7 +204,7 @@ public class DatabaseUtilities {
                             dbRelCollection
                         ]
                     )
-                    ?? throw new XSystem($"Unable to cast IEntity to Entity type object", null);
+                    ?? throw new SystemError($"Unable to cast IEntity to Entity type object", null);
 
                 castedCollection = typeof(Enumerable)
                     .GetMethod("ToList")?
@@ -215,7 +215,7 @@ public class DatabaseUtilities {
                             castedCollection
                         ]
                     )
-                    ?? throw new XSystem("Unable to convert entity collection", null);
+                    ?? throw new SystemError("Unable to convert entity collection", null);
 
                 relationProperty.SetValue(entity, castedCollection);
             }

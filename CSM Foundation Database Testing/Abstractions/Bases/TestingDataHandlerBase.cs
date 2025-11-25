@@ -1,11 +1,10 @@
 ﻿using CSM_Database_Core.Core.Utilitites;
-using CSM_Database_Core.Entities.Abstractions.Bases;
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 
 using CSM_Database_Testing.Disposing;
 using CSM_Database_Testing.Disposing.Abstractions.Bases;
 
-using CSM_Foundation_Core.Utils;
+using CSM_Foundation_Core.Core.Utils;
 
 using Microsoft.EntityFrameworkCore;
 

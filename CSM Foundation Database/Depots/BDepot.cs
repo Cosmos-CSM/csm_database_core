@@ -2,20 +2,19 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-using CSM_Database_Core.Core.Exceptions;
+using CSM_Database_Core.Core.Errors;
 using CSM_Database_Core.Core.Utilitites;
-using CSM_Database_Core.Depot;
-using CSM_Database_Core.Depot.IDepot_Read;
-using CSM_Database_Core.Depot.IDepot_Update;
-using CSM_Database_Core.Depot.IDepot_View;
-using CSM_Database_Core.Depot.IDepot_View.ViewFilters;
+using CSM_Database_Core.Depots.IDepot_Read;
+using CSM_Database_Core.Depots.IDepot_Update;
+using CSM_Database_Core.Depots.IDepot_View;
+using CSM_Database_Core.Depots.IDepot_View.ViewFilters;
 using CSM_Database_Core.Entities.Abstractions.Bases;
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 using CSM_Database_Core.Entities.Models;
 using CSM_Database_Core.Entities.Models.Input;
 using CSM_Database_Core.Entities.Models.Output;
 
-using CSM_Foundation_Core;
+using CSM_Foundation_Core.Abstractions.Interfaces;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -402,7 +401,7 @@ public abstract class BDepot<TDatabase, TEntity>
                 e => e.Id == id
             )
             .FirstOrDefaultAsync()
-            ?? throw new XDepot<TEntity>(XDepotEvents.UNFOUND, $"{nameof(IEntity.Id)} = {id}");
+            ?? throw new DepotError<TEntity>(DepotErrorEvents.UNFOUND, $"{nameof(IEntity.Id)} = {id}");
 
         entity.EvaluateRead();
         return entity;
@@ -550,7 +549,7 @@ public abstract class BDepot<TDatabase, TEntity>
     ///     Always the record to be overriden will be defined by the <see cref="IEntity.Id"/> property, if isn't given, will try with <see cref="NamedEntityBase.Name"/> property in case the
     ///     [Entity] implementation does have it, otherwise will finally create a new record with the given values.
     /// </remarks>
-    /// <exception cref="XDepot{TEntity}">
+    /// <exception cref="DepotError{TEntity}">
     ///     <see cref="IDepot{TEntity}"/> related exception.
     /// </exception>
     public async Task<UpdateOutput<TEntity>> Update(QueryInput<TEntity, UpdateInput<TEntity>> input) {
@@ -566,7 +565,7 @@ public abstract class BDepot<TDatabase, TEntity>
         /// --> When the entity is not saved yet.
         if (entity.Id == 0) {
             if (!parameters.Create) {
-                throw new XDepot<TEntity>(XDepotEvents.CREATE_DISABLED);
+                throw new DepotError<TEntity>(DepotErrorEvents.CREATE_DISABLED);
             }
 
             entity = await Create(entity);
@@ -583,11 +582,11 @@ public abstract class BDepot<TDatabase, TEntity>
             .Where(obj => obj.Id == entity.Id)
             .AsNoTracking()
             .FirstOrDefaultAsync()
-            ?? throw new XDepot<TEntity>(XDepotEvents.UNFOUND);
+            ?? throw new DepotError<TEntity>(DepotErrorEvents.UNFOUND);
 
         if (original == null) {
             if (!parameters.Create)
-                throw new XDepot<TEntity>(XDepotEvents.UNFOUND, $"{typeof(TEntity).Name}.Id = {entity.Id}");
+                throw new DepotError<TEntity>(DepotErrorEvents.UNFOUND, $"{typeof(TEntity).Name}.Id = {entity.Id}");
 
             entity.Id = 0;
             entity = await Create(entity);
@@ -623,7 +622,7 @@ public abstract class BDepot<TDatabase, TEntity>
     /// <returns>
     ///     Deleted <see cref="TEntity"/> record.
     /// </returns>
-    /// <exception cref="XDepot{TEntity}">
+    /// <exception cref="DepotError{TEntity}">
     ///     <see cref="IDepot{TEntity}"/> based exception, more info see inner Situation.
     /// </exception>
     public async Task<TEntity> Delete(long id) {
@@ -632,7 +631,7 @@ public abstract class BDepot<TDatabase, TEntity>
             .FirstOrDefaultAsync(
                 e => e.Id == id
             )
-            ?? throw new XDepot<TEntity>(XDepotEvents.UNFOUND, $"{typeof(TEntity).Name}.Id = {id}");
+            ?? throw new DepotError<TEntity>(DepotErrorEvents.UNFOUND, $"{typeof(TEntity).Name}.Id = {id}");
 
         _dbSet.Remove(entity);
         _db.SaveChanges();

@@ -1,10 +1,9 @@
-﻿using CSM_Database_Core.Depot;
-using CSM_Database_Core.Entities.Abstractions.Bases;
+﻿using CSM_Database_Core.Entities.Abstractions.Bases;
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 using CSM_Database_Core.Entities.Models.Input;
 using CSM_Database_Core.Entities.Models.Output;
 
-namespace CSM_Database_Core.Depot.IDepot_Read;
+namespace CSM_Database_Core.Depots.IDepot_Read;
 
 /// <summary>
 ///     [Interface] to expose common [Read] action methods for <see cref="IDepot{TSet}"/> implementations.

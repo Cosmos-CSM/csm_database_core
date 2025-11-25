@@ -1,4 +1,4 @@
-﻿using CSM_Database_Core.Depot;
+﻿using CSM_Database_Core.Depots;
 using CSM_Database_Core.Entities.Abstractions.Bases;
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 

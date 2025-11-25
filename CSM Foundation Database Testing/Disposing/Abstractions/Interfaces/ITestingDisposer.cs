@@ -1,7 +1,6 @@
-﻿using CSM_Database_Core.Entities.Abstractions.Bases;
-using CSM_Database_Core.Entities.Abstractions.Interfaces;
+﻿using CSM_Database_Core.Entities.Abstractions.Interfaces;
 
-using CSM_Foundation_Core;
+using CSM_Foundation_Core.Abstractions.Interfaces;
 
 namespace CSM_Database_Testing.Disposing.Abstractions.Interfaces;
 

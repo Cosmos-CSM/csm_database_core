@@ -1,5 +1,5 @@
 ﻿using CSM_Database_Core.Entities.Abstractions.Interfaces;
-using CSM_Database_Core.Validations.Abstractions.Bases;
+using CSM_Database_Core.Validation.Abstractions.Bases;
 
 namespace CSM_Database_Testing.Abstractions.Bases;
 

@@ -3,7 +3,7 @@ using CSM_Database_Core.Entities.Abstractions.Interfaces;
 
 using System.Linq.Expressions;
 
-namespace CSM_Database_Core.Depot.IDepot_View.ViewFilters;
+namespace CSM_Database_Core.Depots.IDepot_View.ViewFilters;
 
 /// <summary>
 ///     {implementation} <see langword="class"/> for <see cref="ViewFilterLogical{T}"/>.

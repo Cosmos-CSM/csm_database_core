@@ -2,12 +2,12 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-using CSM_Database_Core.Entities.Abstractions.Bases;
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 
-using CSM_Foundation_Core.Convertion;
+using CSM_Foundation_Core.Convertion.Abstractions.Bases;
+using CSM_Foundation_Core.Convertion.Abstractions.Interfaces;
 
-namespace CSM_Database_Core.Depot.IDepot_View.ViewFilters;
+namespace CSM_Database_Core.Depots.IDepot_View.ViewFilters;
 
 /// <summary>
 ///     Represents a View system filter node, building and evaluating by itself (implementations) the way the View operation will be filtered.
@@ -16,7 +16,7 @@ namespace CSM_Database_Core.Depot.IDepot_View.ViewFilters;
 ///     Type of the <see cref="IEntity"/> object being handled.
 /// </typeparam>
 public interface IViewFilterNode<TEntity>
-    : IConverterVariation
+    : IConverterVariant
     where TEntity : IEntity {
     /// <summary>
     ///     Filtering application order when a collection of <see cref="IViewFilterNode{T}"/> was given.
@@ -63,7 +63,7 @@ public class IViewFilterNodeConverterFactory
 ///     <see cref="IEntity"/> type the <see cref="IViewFilterNode{T}"/> uses.
 /// </typeparam>
 public class IViewFilterNodeConverter<TEntity>
-    : BConverter<IViewFilterNode<TEntity>>
+    : ConverterBase<IViewFilterNode<TEntity>>
     where TEntity : IEntity {
 
 

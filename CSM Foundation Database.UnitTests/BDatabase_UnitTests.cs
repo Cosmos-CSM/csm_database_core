@@ -1,5 +1,5 @@
 ﻿using CSM_Database_Core;
-using CSM_Database_Core.Core.Exceptions;
+using CSM_Database_Core.Core.Errors;
 using CSM_Database_Core.Core.Models;
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 
@@ -102,7 +102,7 @@ public class BDatabase_UnitTests {
     public void ValidateSetsB() {
         BDatabaseMock_UnreferencedInterface mock = new();
 
-        XDatabase exception = Assert.Throws<XDatabase>(mock.ValidateSets);
-        Assert.Equal(XDatabaseEvents.INTERFACE_UNCONFIGURED, exception.Event);
+        DatabaseError exception = Assert.Throws<DatabaseError>(mock.ValidateSets);
+        Assert.Equal(DatabaseErrorEvents.INTERFACE_UNCONFIGURED, exception.Event);
     }
 }

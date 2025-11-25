@@ -1,10 +1,10 @@
-﻿using CSM_Database_Core.Depot.IDepot_Read;
+﻿using CSM_Database_Core.Depots.IDepot_Read;
 using CSM_Database_Core.Entities.Abstractions.Bases;
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 using CSM_Database_Core.Entities.Models.Input;
 using CSM_Database_Core.Entities.Models.Output;
 
-namespace CSM_Database_Core.Depot;
+namespace CSM_Database_Core.Depots;
 
 /// <summary>
 ///     [Interface] describing [Delete] operations for [Depot] implementations.

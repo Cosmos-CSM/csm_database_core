@@ -3,9 +3,9 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
-using CSM_Database_Core.Validations.Abstractions.Bases;
+using CSM_Database_Core.Validation.Abstractions.Bases;
 
-using CSM_Foundation_Core;
+using CSM_Foundation_Core.Abstractions.Bases;
 
 namespace CSM_Database_Core;
 
@@ -18,7 +18,7 @@ namespace CSM_Database_Core;
 ///     </para>
 /// </summary>
 public abstract partial class EntityBase
-    : BObject<IEntity>, IEntity {
+    : ObjectBase<IEntity>, IEntity {
 
     #region Server Side Properties
 

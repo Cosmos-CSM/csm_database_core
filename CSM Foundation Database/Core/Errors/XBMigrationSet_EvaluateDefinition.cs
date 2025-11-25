@@ -1,6 +1,6 @@
-﻿using CSM_Database_Core.Validations.Abstractions.Bases;
+﻿using CSM_Database_Core.Validation.Abstractions.Bases;
 
-namespace CSM_Database_Core.Core.Exceptions;
+namespace CSM_Database_Core.Core.Errors;
 public class XBMigrationSet_EvaluateDefinition
     : Exception {
     public enum Reasons {

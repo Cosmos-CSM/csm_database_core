@@ -1,4 +1,4 @@
-﻿using CSM_Database_Core.Core.Exceptions;
+﻿using CSM_Database_Core.Core.Errors;
 using CSM_Database_Core.Entities.Abstractions.Bases;
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 

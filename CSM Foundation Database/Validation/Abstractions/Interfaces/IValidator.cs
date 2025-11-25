@@ -1,4 +1,4 @@
-﻿namespace CSM_Database_Core.Validations.Abstractions.Interfaces;
+﻿namespace CSM_Database_Core.Validation.Abstractions.Interfaces;
 
 /// <summary>
 ///     Represents a property validator instruction.

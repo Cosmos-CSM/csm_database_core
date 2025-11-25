@@ -1,4 +1,4 @@
-﻿using CSM_Database_Core.Depot.IDepot_View;
+﻿using CSM_Database_Core.Depots.IDepot_View;
 
 namespace CSM_Database_Core.Entities.Models;
 /// <summary>

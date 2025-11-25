@@ -1,10 +1,10 @@
-﻿using CSM_Database_Core.Depot.IDepot_Read;
-using CSM_Database_Core.Depot.IDepot_Update;
-using CSM_Database_Core.Depot.IDepot_View;
+﻿using CSM_Database_Core.Depots.IDepot_Read;
+using CSM_Database_Core.Depots.IDepot_Update;
+using CSM_Database_Core.Depots.IDepot_View;
 using CSM_Database_Core.Entities.Abstractions.Bases;
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 
-namespace CSM_Database_Core.Depot;
+namespace CSM_Database_Core.Depots;
 
 /// <summary>
 ///     [Delegate] declaration to expose an easier API to generate the accumulative instructions for the query after filtering.

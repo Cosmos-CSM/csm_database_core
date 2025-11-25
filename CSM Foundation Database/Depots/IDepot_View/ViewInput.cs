@@ -1,9 +1,9 @@
-﻿using CSM_Database_Core.Depot.IDepot_View.ViewFilters;
+﻿using CSM_Database_Core.Depots.IDepot_View.ViewFilters;
 using CSM_Database_Core.Entities.Abstractions.Bases;
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 using CSM_Database_Core.Entities.Models;
 
-namespace CSM_Database_Core.Depot.IDepot_View;
+namespace CSM_Database_Core.Depots.IDepot_View;
 
 /// <summary>
 ///     Defines options to build a [View]

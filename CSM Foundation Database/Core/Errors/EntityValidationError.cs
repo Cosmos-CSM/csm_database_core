@@ -1,8 +1,8 @@
-﻿namespace CSM_Database_Core.Core.Exceptions;
+﻿namespace CSM_Database_Core.Core.Errors;
 
 
 public class EntityValidationError
-    : BExce {
+    : Exception {
 
     public Type Set;
     public (string Property, XIValidator_Evaluate[])[] Unvalidations;

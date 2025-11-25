@@ -5,7 +5,7 @@ using System.Text.Json;
 using CSM_Database_Core.Entities.Abstractions.Bases;
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 
-namespace CSM_Database_Core.Depot.IDepot_View.ViewFilters;
+namespace CSM_Database_Core.Depots.IDepot_View.ViewFilters;
 
 /// <summary>
 ///     Stores the available options for [View] [Filter] behavior.

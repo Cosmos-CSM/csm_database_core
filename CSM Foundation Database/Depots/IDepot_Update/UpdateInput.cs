@@ -1,7 +1,7 @@
 ﻿using CSM_Database_Core.Entities.Abstractions.Bases;
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 
-namespace CSM_Database_Core.Depot.IDepot_Update;
+namespace CSM_Database_Core.Depots.IDepot_Update;
 
 /// <summary>
 ///     [Record] for single <typeparamref name="TEntity"/> update operation.

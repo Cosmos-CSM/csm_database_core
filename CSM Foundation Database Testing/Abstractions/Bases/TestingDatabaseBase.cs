@@ -3,7 +3,7 @@ using CSM_Database_Core.Core.Utilitites;
 
 using CSM_Database_Testing.Abstractions.Interfaces;
 
-using CSM_Foundation_Core.Extensions;
+using CSM_Foundation_Core.Core.Extensions;
 
 using Microsoft.EntityFrameworkCore;
 

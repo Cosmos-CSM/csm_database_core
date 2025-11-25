@@ -3,16 +3,16 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-using CSM_Foundation_Core.Convertion;
+using CSM_Foundation_Core.Convertion.Abstractions.Interfaces;
 
-namespace CSM_Database_Core.Entities.Abstractions.Interfaces; 
+namespace CSM_Database_Core.Entities.Abstractions.Interfaces;
 
 /// <summary>
 ///     Represents a tenant business live stored entity model, that usually are objects wich data are grouped by bound that 
 ///     instrinsictly defines their own.
 /// </summary>
 public interface IEntity
-    : IConverterVariation {
+    : IConverterVariant {
 
     /// <summary>
     ///     Type of the <see cref="IDatabase"/> implementation that stores this <see cref="IEntity"/> implementation.

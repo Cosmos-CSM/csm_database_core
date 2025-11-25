@@ -1,11 +1,11 @@
-﻿using CSM_Foundation_Core.Exceptions;
+﻿using CSM_Foundation_Core.Errors.Abstractions.Bases;
 
-namespace CSM_Database_Core.Core.Exceptions;
+namespace CSM_Database_Core.Core.Errors;
 
 /// <summary>
-///     Represents the <see cref="XDatabase"/> exception events.
+///     Represents the <see cref="DatabaseError"/> exception events.
 /// </summary>
-public enum XDatabaseEvents {
+public enum DatabaseErrorEvents {
 
     /// <summary>
     ///     Event when the activator finds that the configured context has a DbSet with no entity configured.
@@ -22,8 +22,8 @@ public enum XDatabaseEvents {
 /// <summary>
 ///     Represents an <see cref="Exception"/> handled by database activation process.
 /// </summary>
-public class XDatabase
-    : BException<XDatabaseEvents> {
+public class DatabaseError
+    : ErrorBase<DatabaseErrorEvents> {
 
     /// <summary>
     ///     Creates a new instance.
@@ -34,7 +34,7 @@ public class XDatabase
     /// <param name="data">
     ///     Sensitive analysis data.
     /// </param>
-    public XDatabase(XDatabaseEvents @event, IDictionary<string, object?>? data = null)
+    public DatabaseError(DatabaseErrorEvents @event, IDictionary<string, object?>? data = null)
         : base($"[Database Activation]: {@event}({(int)@event})", @event, data: data) {
 
     }

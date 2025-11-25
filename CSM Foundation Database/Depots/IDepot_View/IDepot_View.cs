@@ -2,7 +2,7 @@
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 using CSM_Database_Core.Entities.Models.Input;
 
-namespace CSM_Database_Core.Depot.IDepot_View;
+namespace CSM_Database_Core.Depots.IDepot_View;
 /// <summary>
 ///     Describes how a <see cref="IDepot_View{TMigrationSet}"/> implementation should
 ///     behave, providing {View} operations, a View operation is the creation of complex 
