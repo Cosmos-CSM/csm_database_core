@@ -1,10 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Reflection;
+﻿using System.Reflection;
 
 using CSM_Database_Core.Abstractions.Interfaces;
 using CSM_Database_Core.Core.Errors;
 using CSM_Database_Core.Core.Models;
-using CSM_Database_Core.Core.Utilitites;
+using CSM_Database_Core.Core.Utils;
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 
 using CSM_Foundation_Core.Abstractions.Bases;
@@ -27,176 +26,43 @@ public abstract partial class DatabaseBase<TDatabases>
     : DbContext, IDatabase
     where TDatabases : DbContext {
 
-    public virtual string Sign { get; private set; } = "DB";
+    public virtual string Sign { get; private set; } = "DBSign";
 
     /// <summary>
-    ///     Whether the database context has logs enabled at building time.
+    ///     Database context options.
     /// </summary>
-    readonly bool _logsOn = true;
-
-    /// <summary>
-    ///     ORM Connection data.
-    /// </summary>
-    protected readonly ConnectionOptions _connection;
+    public DatabaseOptions<TDatabases> DatabaseOptions { get; init; }
 
     /// <summary>
     ///     Creates a new instance.
     /// </summary>
-    /// <param name="logsOn">
-    ///     Whether the logging service is enabled.
-    /// </param>
-    /// <remarks> 
-    ///     Connection configuration will be gathered from the <see cref="Sign"/> signature value config file.
-    /// </remarks>
-    public DatabaseBase(bool logsOn = true)
-        : base() {
-
-        _logsOn = logsOn;
-        _connection = DatabaseUtils.Retrieve(Sign);
+    public DatabaseBase() {
+        DatabaseOptions = new DatabaseOptions<TDatabases>();
+        ValidateDatabaseOptions();
     }
 
     /// <summary>
     ///     Creates a new instance.
     /// </summary>
-    /// <param name="connectionOptions">
-    ///     Database connection options.
+    /// <param name="databaseOptions">
+    ///     Database context options.
     /// </param>
-    /// <param name="logsOn">
-    ///     Whether the logging service is enabled.
-    /// </param>
-    /// <remarks> 
-    ///     Connection configuration will be gathered from the <see cref="Sign"/> signature value config file.
+    public DatabaseBase(DatabaseOptions<TDatabases> databaseOptions)
+        : base(databaseOptions.DbContextOptions ?? new()) {
+        DatabaseOptions = databaseOptions;
+        ValidateDatabaseOptions();
+    }
+
+    /// <summary>
+    ///     Validates <see cref="DatabaseOptions"/> dependencies and generates required ones.
+    /// </summary>
+    /// <remarks>
+    ///     Important process, is required to be called in each constructor.
     /// </remarks>
-    public DatabaseBase(ConnectionOptions connectionOptions, bool logsOn = true)
-        : base() {
-        _logsOn = logsOn;
-        _connection = connectionOptions;
-    }
+    void ValidateDatabaseOptions() {
+        DatabaseOptions.Sign ??= Sign;
 
-    /// <summary>
-    ///     Creates a new instance.
-    /// </summary>
-    /// <param name="dbOptions">
-    ///     Native EntityFrameworkCore <see cref="DbContext"/> implementation options.
-    /// </param>
-    /// <param name="logsOn">
-    ///     Whether the logging service is enabled.
-    /// </param>
-    /// <remarks> 
-    ///     Connection configuration will be gathered from the <see cref="Sign"/> signature value config file.
-    /// </remarks>
-    public DatabaseBase(DbContextOptions<TDatabases> dbOptions, bool logsOn = true)
-        : base(dbOptions) {
-
-        _logsOn = logsOn;
-        _connection = DatabaseUtils.Retrieve(Sign);
-    }
-
-    /// <summary>
-    ///     Creates a new instance.
-    /// </summary>
-    /// <param name="connectionOptions">
-    ///     Database connection options.
-    /// </param>
-    /// <param name="dbOptions">
-    ///     Native EntityFrameworkCore <see cref="DbContext"/> implementation options.
-    /// </param>
-    /// <param name="logsOn">
-    ///     Whether the logging service is enabled.
-    /// </param>
-    /// <remarks> 
-    ///     Connection configuration will be gathered from the <see cref="Sign"/> signature value config file.
-    /// </remarks>
-    public DatabaseBase(ConnectionOptions connectionOptions, DbContextOptions<TDatabases> dbOptions, bool logsOn = true)
-        : base(dbOptions) {
-        _logsOn = logsOn;
-        _connection = connectionOptions;
-    }
-
-    /// <summary>
-    ///     Generates a <see cref="DatabaseBase{TDatabases}"/> instance that handles specific database connection
-    ///     and configuration properties/methods. 
-    /// </summary>
-    /// <param name="sign">
-    ///     Database implementation signature to identify.
-    /// </param>
-    /// <remarks> 
-    ///     This method gathers the <see cref="_connection"/> options from ./<see cref="Sign"/>(Upper)>/*.json files automatically.
-    /// </remarks>
-    public DatabaseBase([StringLength(5, MinimumLength = 5)] string sign)
-        : base() {
-
-        Sign = sign;
-        _connection = DatabaseUtils.Retrieve(Sign);
-    }
-
-    /// <summary>
-    ///     Generates a <see cref="DatabaseBase{TDatabases}"/> instance that handles specific database connection
-    ///     and configuration properties/methods. 
-    /// </summary>
-    /// <param name="sign">
-    ///     Database implementation signature to identify.
-    /// </param>
-    /// <param name="connection">
-    ///     Database connection options.
-    /// </param>
-    /// <param name="logsOn">
-    ///     Whether the logging service is enabled.
-    /// </param>
-    public DatabaseBase([StringLength(5, MinimumLength = 5)] string sign, ConnectionOptions connection, bool logsOn = true)
-        : base() {
-
-        Sign = sign;
-        _connection = connection;
-        _logsOn = logsOn;
-    }
-
-    /// <summary>
-    ///     Generates a <see cref="DatabaseBase{TDatabases}"/> instance that handles specific database connection
-    ///     and configuration properties/methods. 
-    /// </summary>
-    /// <param name="sign">
-    ///     Database implementation signature to identify
-    /// </param>
-    /// <param name="dbOptions">
-    ///     Native EntityFrameworkCore <see cref="DbContext"/> implementation options.
-    /// </param>
-    /// <remarks> 
-    ///     This method gathers the <see cref="_connection"/> options from ./<see cref="Sign"/>(Upper)>/*.json files automatically.
-    /// </remarks>
-    /// <param name="logsOn">
-    ///     Whether the logging service is enabled.
-    /// </param>
-    public DatabaseBase([StringLength(5, MinimumLength = 5)] string sign, DbContextOptions<TDatabases> dbOptions, bool logsOn = true)
-        : base(dbOptions) {
-
-        Sign = sign;
-        _connection = DatabaseUtils.Retrieve(sign);
-        _logsOn = logsOn;
-    }
-
-    /// <summary>
-    ///     Generates a <see cref="DatabaseBase{TDatabases}"/> instance that handles specific database connection
-    ///     and configuration properties/methods. 
-    /// </summary>
-    /// <param name="sign">
-    ///     Database implementation signature to identify
-    /// </param>
-    /// <param name="connection">
-    ///     Database connection options.
-    /// </param>
-    /// <param name="dbOptions">
-    ///     Native EntityFrameworkCore <see cref="DbContext"/> implementation options.
-    /// </param>
-    /// <param name="logsOn">
-    ///     Whether the logging service is enabled.
-    /// </param>
-    public DatabaseBase([StringLength(5, MinimumLength = 5)] string sign, ConnectionOptions connection, DbContextOptions<TDatabases> dbOptions, bool logsOn = true)
-        : base(dbOptions) {
-
-        Sign = sign;
-        _connection = connection;
-        _logsOn = logsOn;
+        DatabaseOptions.ConnectionOptions ??= DatabaseUtils.GetConnectionOptions(Sign, DatabaseOptions.ForTesting);
     }
 
     /// <summary>
@@ -241,7 +107,9 @@ public abstract partial class DatabaseBase<TDatabases>
 
 
     public void ValidateHealth() {
-        if (_logsOn) {
+        bool logsOn = DatabaseOptions.EnableLogging;
+
+        if (logsOn) {
             ConsoleUtils.Announce(
                     $"Setting up ORM",
                     new() {
@@ -253,7 +121,7 @@ public abstract partial class DatabaseBase<TDatabases>
 
         if (Database.CanConnect()) {
 
-            if (_logsOn)
+            if (logsOn)
                 ConsoleUtils.Success($"[{GetType().FullName}] ORM Set");
 
             IEnumerable<string> pendingMigrations = Database.GetPendingMigrations();
@@ -274,9 +142,11 @@ public abstract partial class DatabaseBase<TDatabases>
     ///     Evaluates if <see cref="Sets"/> are correctly configured and translated to the internal framework handler.
     /// </summary>
     public void Evaluate() {
+
+        bool logsOn = DatabaseOptions.EnableLogging;
         EntityBase[] sets = ValidateSets();
 
-        if (_logsOn) {
+        if (logsOn) {
             ConsoleUtils.Announce(
                 $"[{GetType().Name}] Validatig Sets...",
                 new() {
@@ -288,7 +158,7 @@ public abstract partial class DatabaseBase<TDatabases>
         Exception[] evResults = [];
         foreach (EntityBase set in sets) {
             Exception[] result = set.EvaluateDefinition();
-            if (result.Length > 0 && _logsOn) {
+            if (result.Length > 0 && logsOn) {
                 ConsoleUtils.Warning(
                     "Wrong [Set] definition",
                     new() {
@@ -303,7 +173,7 @@ public abstract partial class DatabaseBase<TDatabases>
 
         if (evResults.Length > 0) {
             throw new Exception("Database [Set] definition failures");
-        } else if (_logsOn) {
+        } else if (logsOn) {
             ConsoleUtils.Success($"[{GetType().Name}] Set validation succeeded");
         }
     }
@@ -324,7 +194,7 @@ public abstract partial class DatabaseBase<TDatabases>
     ///     Relations builder proxy object.
     /// </param>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-        string connectionString = _connection.GenerateConnectionString();
+        string connectionString = DatabaseOptions.ConnectionOptions!.GenerateConnectionString();
         optionsBuilder.UseSqlServer(connectionString);
 
         /// We catch when the execution context is an Entity Framework design runtime.
@@ -332,7 +202,7 @@ public abstract partial class DatabaseBase<TDatabases>
 
             string envValue = SystemUtils.GetVar("ASPNETCORE_ENVIRONMENT") ?? SystemUtils.GetVar("DOTNET_ENVIRONMENT") ?? "---";
 
-            if (_logsOn) {
+            if (DatabaseOptions.EnableLogging) {
                 ConsoleUtils.Warning(
                         $"Running EF Design Time Execution",
                         new Dictionary<string, object?> {

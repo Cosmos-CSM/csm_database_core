@@ -3,7 +3,7 @@ using System.Reflection;
 
 using CSM_Database_Core;
 using CSM_Database_Core.Core.Errors;
-using CSM_Database_Core.Core.Utilitites;
+using CSM_Database_Core.Core.Models;
 using CSM_Database_Core.Depots.Abstractions.Bases;
 using CSM_Database_Core.Depots.Abstractions.Interfaces;
 using CSM_Database_Core.Depots.Models;
@@ -66,11 +66,23 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
         : base(
             [
                 ..factories,
-                () => database?.Invoke() ?? DatabaseUtils.ActivateTestingDatabase<TDatabase>()
+                () => database?.Invoke()
+                    ?? (TDatabase)Activator.CreateInstance(
+                        typeof(TDatabase),
+                        new DatabaseOptions<TDatabase> {
+                            ForTesting = true,
+                        }
+                    )!,
             ]
         ) {
 
-        Database = (TDatabase)(database?.Invoke() ?? DatabaseUtils.ActivateTestingDatabase<TDatabase>());
+        Database = (TDatabase)database?.Invoke()!
+                    ?? (TDatabase)Activator.CreateInstance(
+                        typeof(TDatabase),
+                        new DatabaseOptions<TDatabase> {
+                            ForTesting = true,
+                        }
+                    )!;
         Depot = (TDepot)Activator.CreateInstance(typeof(TDepot), Database, null)!;
 
         PropertyInfo[] entityProperties = typeof(TEntity).GetProperties();
