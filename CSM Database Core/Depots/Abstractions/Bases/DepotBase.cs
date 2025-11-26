@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 
 using CSM_Database_Core.Core.Errors;
-using CSM_Database_Core.Core.Utilitites;
+using CSM_Database_Core.Core.Utils;
 using CSM_Database_Core.Depots.Abstractions.Interfaces;
 using CSM_Database_Core.Depots.Models;
 using CSM_Database_Core.Entities.Abstractions.Bases;

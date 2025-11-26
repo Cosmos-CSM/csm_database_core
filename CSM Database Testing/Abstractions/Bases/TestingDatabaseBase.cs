@@ -1,5 +1,5 @@
 ﻿using CSM_Database_Core;
-using CSM_Database_Core.Core.Utilitites;
+using CSM_Database_Core.Core.Models;
 
 using CSM_Database_Testing.Abstractions.Interfaces;
 
@@ -30,7 +30,13 @@ public abstract class TestingDatabaseBase<TDatabase>
     ///     Creates a new instance.
     /// </summary>
     public TestingDatabaseBase() {
-        _database = DatabaseUtils.ActivateTestingDatabase<TDatabase>();
+
+        _database = (TDatabase)Activator.CreateInstance(
+                typeof(TDatabase),
+                new DatabaseOptions<TDatabase> {
+                    ForTesting = true,
+                }
+            )!;
     }
 
     [Fact]

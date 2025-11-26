@@ -1,5 +1,20 @@
 # CSM Foundation Database CHANGELOG
 
+## [2.1.0] - 26.11-2025
+
+### Changed
+
+- Database activation based on testing purposes.
+
+#### Dependencies
+
+| Package                                 | Previous Version | New Version     |
+|:----------------------------------------|:----------------:|:---------------:|
+| CSM.Foundation.Core                     | 2.0.0            | 2.0.0           |
+| Microsoft.EntityFrameworkCore           | 9.0.8            | 9.0.8           |
+| Microsoft.EntityFrameworkCore.SqlServer | 9.0.8            | 9.0.8           |
+
+
 ## [2.0.1] - 25.11-2025
 
 ### Changed

@@ -1,4 +1,4 @@
-﻿using CSM_Database_Core.Core.Utilitites;
+﻿using CSM_Database_Core.Core.Utils;
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 
 using CSM_Database_Testing.Disposing;
