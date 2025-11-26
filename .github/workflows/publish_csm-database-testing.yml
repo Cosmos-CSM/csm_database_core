@@ -1,4 +1,4 @@
-name: Publish CSM Foundation Database
+name: Publish CSM Foundation Database Testing
 
 on:
   # 1) Manual trigger in the Actions tab
@@ -9,7 +9,7 @@ on:
     branches:
       - main
     paths:
-      - 'CSM Foundation Database/**'
+      - 'CSM Database Testing/**'
 
 permissions:
   contents: read
@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      CS_PROJECT_PATH: 'CSM Foundation Database/CSM Foundation Database.csproj'
+      CS_PROJECT_PATH: 'CSM Database Testing/CSM Database Testing.csproj'
 
     steps:
       - name: 🔄 Checkout repo
@@ -69,5 +69,3 @@ jobs:
             --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
             --api-key "${{ secrets.PUBLISH_PAT }}" \
             --skip-duplicate
-
-
