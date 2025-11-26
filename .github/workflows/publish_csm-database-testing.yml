@@ -9,7 +9,7 @@ on:
     branches:
       - main
     paths:
-      - 'CSM Foundation Database Testing/**'
+      - 'CSM Database Testing/**'
 
 permissions:
   contents: read
@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      CS_PROJECT_PATH: 'CSM Foundation Database Testing/CSM Foundation Database Testing.csproj'
+      CS_PROJECT_PATH: 'CSM Database Testing/CSM Database Testing.csproj'
 
     steps:
       - name: 🔄 Checkout repo
