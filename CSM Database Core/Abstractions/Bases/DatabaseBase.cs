@@ -39,7 +39,7 @@ public abstract partial class DatabaseBase<TDatabases>
     /// </summary>
     public DatabaseBase() {
         DatabaseOptions = new DatabaseOptions<TDatabases>();
-        ValidateDatabaseOptions();
+        BuildOptions();
     }
 
     /// <summary>
@@ -52,7 +52,7 @@ public abstract partial class DatabaseBase<TDatabases>
         : base(databaseOptions.DbContextOptions ?? new()) {
         DatabaseOptions = databaseOptions;
 
-        ValidateDatabaseOptions();
+        BuildOptions();
     }
 
     /// <summary>
@@ -61,22 +61,10 @@ public abstract partial class DatabaseBase<TDatabases>
     /// <remarks>
     ///     Important process, is required to be called in each constructor.
     /// </remarks>
-    void ValidateDatabaseOptions() {
+    void BuildOptions() {
         DatabaseOptions.Sign ??= Sign;
 
         DatabaseOptions.ConnectionOptions ??= DatabaseUtils.GetConnectionOptions(Sign, DatabaseOptions.ForTesting);
-    }
-
-        try {
-            Database.OpenConnection();
-            return true;
-        } catch (Exception ex) {
-
-            if(strict)
-                throw new Exception($"Invalid connection with Database ({GetType().FullName}) | {ex.InnerException?.Message}");
-
-            return false;
-        }
     }
 
     /// <summary>

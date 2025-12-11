@@ -311,7 +311,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
                     () => Assert.Empty(readEntites.Failures),
                     () => Assert.Equal(1, readEntites.SuccessesCount),
                     () => {
-                        TEntityInterface readEntity = readEntites.Successes[0];
+                        TEntity readEntity = readEntites.Successes[0];
 
                         Assert.Equal(samplePivot.Id, readEntity.Id);
                         Assert.Equal(samplePivot.Timestamp, readEntity.Timestamp);
@@ -343,7 +343,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
                     () => Assert.Empty(readEntites.Failures),
                     () => Assert.Equal(1, readEntites.SuccessesCount),
                     () => {
-                        TEntityInterface readEntity = readEntites.Successes[0];
+                        TEntity readEntity = readEntites.Successes[0];
 
                         Assert.Equal(samplePivot.Id, readEntity.Id);
                         Assert.Equal(samplePivot.Timestamp, readEntity.Timestamp);
@@ -376,7 +376,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
                     () => Assert.All(
                             samples,
                             (sample) => {
-                                TEntityInterface entity = readEntites.Successes.First(i => i.Id == sample.Id);
+                                TEntity entity = readEntites.Successes.First(i => i.Id == sample.Id);
 
                                 Assert.Equal(sample.Id, entity.Id);
                                 Assert.Equal(sample.Timestamp, entity.Timestamp);
@@ -412,7 +412,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
                 [
                     () => Assert.Null(updateOutput.Original),
                     () => {
-                        TEntityInterface overwritten = updateOutput.Updated;
+                        TEntity overwritten = updateOutput.Updated;
 
                         Assert.True(overwritten.Id > 0);
                         AssertEvaluable(sample, overwritten);
@@ -489,7 +489,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
                 [
                     () => Assert.NotNull(updateOutput.Original),
                     () => {
-                        TEntityInterface overwritten = updateOutput.Updated;
+                        TEntity overwritten = updateOutput.Updated;
 
                         Assert.NotEqual(updateOutput.Original, overwritten);
 
@@ -549,7 +549,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
                     () => Assert.Empty(deleteOutput.Failures),
                     () => Assert.NotEmpty(deleteOutput.Successes),
                     () => {
-                        TEntityInterface deletedEntity = deleteOutput.Successes[0];
+                        TEntity deletedEntity = deleteOutput.Successes[0];
 
                         Assert.Equal(entity.Id, deletedEntity.Id);
                     },
@@ -663,7 +663,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
                         Range = 20,
                         Retroactive = false,
                         Filters = [
-                            new ViewFilterDate<TEntityInterface> {
+                            new ViewFilterDate<TEntity> {
                                 From = DateTime.UtcNow.Date,
                             },
                         ],
@@ -694,7 +694,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
                         Range = 20,
                         Page = 1,
                         Filters = [
-                            new ViewFilterProperty<TEntityInterface> {
+                            new ViewFilterProperty<TEntity> {
                                 Operator = ViewFilterOperators.CONTAINS,
                                 Property = _evaluableProperty.Name,
                                 Value = sampleValue,
@@ -719,12 +719,12 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
         TEntity[] entities = await Store(2, EntityFactory);
 
         List<object?> possibleValues = [];
-        List<IViewFilter<TEntityInterface>> filters = [];
+        List<IViewFilter<TEntity>> filters = [];
 
         foreach (TEntity entity in entities) {
             object? sampleValue = _evaluableProperty.GetValue(entity);
             filters.Add(
-                    new ViewFilterProperty<TEntityInterface> {
+                    new ViewFilterProperty<TEntity> {
                         Operator = ViewFilterOperators.CONTAINS,
                         Property = _evaluableProperty.Name,
                         Value = sampleValue,
@@ -739,7 +739,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
                         Range = 20,
                         Page = 1,
                         Filters = [
-                            new ViewFilterLogical<TEntityInterface>{
+                            new ViewFilterLogical<TEntity>{
                                 Operator = ViewFilterLogicalOperators.OR,
                                 Filters = [..filters],
                             },
