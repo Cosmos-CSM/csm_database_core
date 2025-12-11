@@ -4,7 +4,6 @@ using System.Reflection;
 using CSM_Database_Core;
 using CSM_Database_Core.Core.Errors;
 using CSM_Database_Core.Core.Models;
-using CSM_Database_Core.Depots.Abstractions.Bases;
 using CSM_Database_Core.Depots.Abstractions.Interfaces;
 using CSM_Database_Core.Depots.Models;
 using CSM_Database_Core.Depots.ViewFilters;
@@ -29,10 +28,11 @@ namespace CSM_Database_Testing.Abstractions.Bases;
 /// <typeparam name="TDatabase">
 ///     [Database] that stores the <see cref="TEntity"/> data.
 /// </typeparam>
-public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
+public abstract class TestingDepotBase<TEntityInterface, TEntity, TDepot, TDatabase>
     : TestingDataHandlerBase
-    where TEntity : class, IEntity, new()
-    where TDepot : IDepot<TEntity>
+    where TEntityInterface : IEntity
+    where TEntity : class, TEntityInterface, new()
+    where TDepot : IDepot<TEntity, TEntityInterface>
     where TDatabase : DatabaseBase<TDatabase>, new() {
 
     /// <summary>
@@ -134,7 +134,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
     /// </summary>
     /// <param name="expected"></param>
     /// <param name="actual"></param>
-    protected void AssertEvaluable(TEntity expected, TEntity actual) {
+    protected void AssertEvaluable(TEntityInterface expected, TEntityInterface actual) {
         object? sampleEvaluableValue = Evaluable.GetValue(expected);
         object? overwrittenEvaluableValue = Evaluable.GetValue(actual);
 
@@ -211,7 +211,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
     public async Task CreateA() {
         TEntity sample = Sampling();
 
-        TEntity storedEntity = await Depot.Create(sample);
+        TEntityInterface storedEntity = await Depot.Create(sample);
         await CommitSampleEntities([storedEntity]);
 
         Assert.Multiple(
@@ -233,7 +233,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
     public async Task CreateB() {
         TEntity[] samples = Sampling(3);
 
-        BatchOperationOutput<TEntity> qOut = await Depot.Create(samples);
+        BatchOperationOutput<TEntityInterface> qOut = await Depot.Create(samples);
         await CommitSampleEntities(samples);
 
         Assert.Multiple(
@@ -253,7 +253,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
     public virtual async Task ReadA() {
         TEntity sample = Store(EntityFactory);
 
-        TEntity readEntity = await Depot.Read(sample.Id);
+        TEntityInterface readEntity = await Depot.Read(sample.Id);
         Assert.Multiple(
                 [
                     () => Assert.Equal(sample.Id, readEntity.Id),
@@ -272,7 +272,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
         TEntity[] samples = await Store(20, EntityFactory);
         long[] sampleIds = [.. samples.Select(i => i.Id)];
 
-        BatchOperationOutput<TEntity> readEntities = await Depot.Read(sampleIds);
+        BatchOperationOutput<TEntityInterface> readEntities = await Depot.Read(sampleIds);
         Assert.Multiple(
                 [
                     () => Assert.Empty(readEntities.Failures),
@@ -299,9 +299,9 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
         TEntity[] samples = await Store(2, EntityFactory);
         TEntity samplePivot = samples[0];
 
-        BatchOperationOutput<TEntity> readEntites = await Depot.Read(
-                new QueryInput<TEntity, FilterQueryInput<TEntity>> {
-                    Parameters = new FilterQueryInput<TEntity> {
+        BatchOperationOutput<TEntityInterface> readEntites = await Depot.Read(
+                new QueryInput<TEntityInterface, FilterQueryInput<TEntityInterface>> {
+                    Parameters = new FilterQueryInput<TEntityInterface> {
                         Behavior = FilteringBehaviors.First,
                         Filter = (entity) => entity.Id == samplePivot.Id || entity.Id == samples[1].Id
                     }
@@ -313,7 +313,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
                     () => Assert.Empty(readEntites.Failures),
                     () => Assert.Equal(1, readEntites.SuccessesCount),
                     () => {
-                        TEntity readEntity = readEntites.Successes[0];
+                        TEntityInterface readEntity = readEntites.Successes[0];
 
                         Assert.Equal(samplePivot.Id, readEntity.Id);
                         Assert.Equal(samplePivot.Timestamp, readEntity.Timestamp);
@@ -331,9 +331,9 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
         TEntity[] samples = await Store(2, EntityFactory);
         TEntity samplePivot = samples[1];
 
-        BatchOperationOutput<TEntity> readEntites = await Depot.Read(
-                new QueryInput<TEntity, FilterQueryInput<TEntity>> {
-                    Parameters = new FilterQueryInput<TEntity> {
+        BatchOperationOutput<TEntityInterface> readEntites = await Depot.Read(
+                new QueryInput<TEntityInterface, FilterQueryInput<TEntityInterface>> {
+                    Parameters = new FilterQueryInput<TEntityInterface> {
                         Behavior = FilteringBehaviors.Last,
                         Filter = (entity) => entity.Id == samplePivot.Id || entity.Id == samples[0].Id
                     }
@@ -345,7 +345,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
                     () => Assert.Empty(readEntites.Failures),
                     () => Assert.Equal(1, readEntites.SuccessesCount),
                     () => {
-                        TEntity readEntity = readEntites.Successes[0];
+                        TEntityInterface readEntity = readEntites.Successes[0];
 
                         Assert.Equal(samplePivot.Id, readEntity.Id);
                         Assert.Equal(samplePivot.Timestamp, readEntity.Timestamp);
@@ -362,9 +362,9 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
     public virtual async Task ReadE() {
         TEntity[] samples = await Store(2, EntityFactory);
 
-        BatchOperationOutput<TEntity> readEntites = await Depot.Read(
-                new QueryInput<TEntity, FilterQueryInput<TEntity>> {
-                    Parameters = new FilterQueryInput<TEntity> {
+        BatchOperationOutput<TEntityInterface> readEntites = await Depot.Read(
+                new QueryInput<TEntityInterface, FilterQueryInput<TEntityInterface>> {
+                    Parameters = new FilterQueryInput<TEntityInterface> {
                         Behavior = FilteringBehaviors.All,
                         Filter = (entity) => entity.Id == samples[0].Id || entity.Id == samples[1].Id
                     }
@@ -378,7 +378,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
                     () => Assert.All(
                             samples,
                             (sample) => {
-                                TEntity entity = readEntites.Successes.First(i => i.Id == sample.Id);
+                                TEntityInterface entity = readEntites.Successes.First(i => i.Id == sample.Id);
 
                                 Assert.Equal(sample.Id, entity.Id);
                                 Assert.Equal(sample.Timestamp, entity.Timestamp);
@@ -400,9 +400,9 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
     public virtual async Task UpdateA() {
         TEntity sample = RunEntityFactory(EntityFactory);
 
-        UpdateOutput<TEntity> updateOutput = await Depot.Update(
-                new QueryInput<TEntity, UpdateInput<TEntity>> {
-                    Parameters = new UpdateInput<TEntity> {
+        UpdateOutput<TEntityInterface> updateOutput = await Depot.Update(
+                new QueryInput<TEntityInterface, UpdateInput<TEntityInterface>> {
+                    Parameters = new UpdateInput<TEntityInterface> {
                         Entity = sample,
                         Create = true,
                     },
@@ -414,7 +414,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
                 [
                     () => Assert.Null(updateOutput.Original),
                     () => {
-                        TEntity overwritten = updateOutput.Updated;
+                        TEntityInterface overwritten = updateOutput.Updated;
 
                         Assert.True(overwritten.Id > 0);
                         AssertEvaluable(sample, overwritten);
@@ -429,12 +429,12 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
 
         DepotError<TEntity> depotException = await Assert.ThrowsAsync<DepotError<TEntity>>(
                 async () => {
-                    UpdateOutput<TEntity> updateOutput = await Depot.Update(
-                new QueryInput<TEntity, UpdateInput<TEntity>> {
-                    Parameters = new UpdateInput<TEntity> {
-                        Entity = sample,
-                    },
-                }
+                            UpdateOutput<TEntityInterface> updateOutput = await Depot.Update(
+                        new QueryInput<TEntityInterface, UpdateInput<TEntityInterface>> {
+                            Parameters = new UpdateInput<TEntityInterface> {
+                                Entity = sample,
+                            },
+                        }
                     );
                 }
             );
@@ -449,9 +449,9 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
 
         DepotError<TEntity> depotException = await Assert.ThrowsAsync<DepotError<TEntity>>(
                 async () => {
-                    UpdateOutput<TEntity> updateOutput = await Depot.Update(
-                        new QueryInput<TEntity, UpdateInput<TEntity>> {
-                            Parameters = new UpdateInput<TEntity> {
+                    UpdateOutput<TEntityInterface> updateOutput = await Depot.Update(
+                        new QueryInput<TEntityInterface, UpdateInput<TEntityInterface>> {
+                            Parameters = new UpdateInput<TEntityInterface> {
                                 Entity = sample,
                             },
                         }
@@ -479,9 +479,9 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
 
         ValidEvaluable.SetValue(sample, ValidEvaluable.GetValue(valueReference));
 
-        UpdateOutput<TEntity> updateOutput = await Depot.Update(
-                new QueryInput<TEntity, UpdateInput<TEntity>> {
-                    Parameters = new UpdateInput<TEntity> {
+        UpdateOutput<TEntityInterface> updateOutput = await Depot.Update(
+                new QueryInput<TEntityInterface, UpdateInput<TEntityInterface>> {
+                    Parameters = new UpdateInput<TEntityInterface> {
                         Entity = sample,
                     },
                 }
@@ -491,7 +491,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
                 [
                     () => Assert.NotNull(updateOutput.Original),
                     () => {
-                        TEntity overwritten = updateOutput.Updated;
+                        TEntityInterface overwritten = updateOutput.Updated;
 
                         Assert.NotEqual(updateOutput.Original, overwritten);
 
@@ -536,9 +536,9 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
     public virtual async Task DeleteC() {
         TEntity entity = (await Store(10, EntityFactory))[0];
 
-        BatchOperationOutput<TEntity> deleteOutput = await Depot.Delete(
-                new QueryInput<TEntity, FilterQueryInput<TEntity>>() {
-                    Parameters = new FilterQueryInput<TEntity> {
+        BatchOperationOutput<TEntityInterface> deleteOutput = await Depot.Delete(
+                new QueryInput<TEntityInterface, FilterQueryInput<TEntityInterface>>() {
+                    Parameters = new FilterQueryInput<TEntityInterface> {
                         Filter = (entityB) => entityB.Id == entity.Id,
                     }
                 }
@@ -551,7 +551,7 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
                     () => Assert.Empty(deleteOutput.Failures),
                     () => Assert.NotEmpty(deleteOutput.Successes),
                     () => {
-                        TEntity deletedEntity = deleteOutput.Successes[0];
+                        TEntityInterface deletedEntity = deleteOutput.Successes[0];
 
                         Assert.Equal(entity.Id, deletedEntity.Id);
                     },
@@ -573,8 +573,8 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
         const int viewPage = 1;
         await Store(30, EntityFactory);
 
-        ViewOutput<TEntity> viewOutput = await Depot.View(
-                new QueryInput<TEntity, ViewInput<TEntity>> {
+        ViewOutput<TEntityInterface> viewOutput = await Depot.View(
+                new QueryInput<TEntityInterface, ViewInput<TEntityInterface>> {
                     Parameters = new() {
                         Retroactive = false,
                         Range = 20,
@@ -596,9 +596,9 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
         const int viewPage = 2;
         await Store(30, EntityFactory);
 
-        ViewOutput<TEntity> viewOutput = await Depot.View(
-                new QueryInput<TEntity, ViewInput<TEntity>> {
-                    Parameters = new ViewInput<TEntity> {
+        ViewOutput<TEntityInterface> viewOutput = await Depot.View(
+                new QueryInput<TEntityInterface, ViewInput<TEntityInterface>> {
+                    Parameters = new ViewInput<TEntityInterface> {
                         Retroactive = false,
                         Range = 20,
                         Page = viewPage,
@@ -617,8 +617,8 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
     [Fact(DisplayName = $"[View]: Specific ordering by property")]
     public async Task ViewC() {
 
-        ViewOutput<TEntity> orderedViewOutput = await Depot.View(
-                        new QueryInput<TEntity, ViewInput<TEntity>> {
+        ViewOutput<TEntityInterface> orderedViewOutput = await Depot.View(
+                        new QueryInput<TEntityInterface, ViewInput<TEntityInterface>> {
                             Parameters = new() {
                                 Page = 1,
                                 Range = 20,
@@ -633,9 +633,8 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
                         }
                    );
 
-
         // --> Manual ordering undordered result for reference.
-        TEntity[] orderedReferenceRecords = [.. orderedViewOutput.Entities];
+        IEnumerable<TEntity> orderedReferenceRecords = orderedViewOutput.Entities.Cast<TEntity>();
         {
             Type setType = typeof(TEntity);
             ParameterExpression parameterExpression = Expression.Parameter(setType, $"X0");
@@ -649,9 +648,9 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
             orderedReferenceRecords = [.. sorted];
         }
 
-        for (int i = 0; i < orderedReferenceRecords.Length; i++) {
-            TEntity expected = orderedReferenceRecords[i];
-            TEntity actual = orderedViewOutput.Entities[i];
+        for (int i = 0; i < orderedReferenceRecords.Count(); i++) {
+            TEntity expected = orderedReferenceRecords.ElementAt(i);
+            TEntity actual = (TEntity)orderedViewOutput.Entities[i];
 
             Assert.Equal(Evaluable.GetValue(expected), Evaluable.GetValue(actual));
         }
@@ -659,14 +658,14 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
 
     [Fact(DisplayName = "[View]: Using Date filter")]
     public async Task ViewD() {
-        ViewOutput<TEntity> viewOutput = await Depot.View(
-                new QueryInput<TEntity, ViewInput<TEntity>> {
+        ViewOutput<TEntityInterface> viewOutput = await Depot.View(
+                new QueryInput<TEntityInterface, ViewInput<TEntityInterface>> {
                     Parameters = new() {
                         Page = 1,
                         Range = 20,
                         Retroactive = false,
                         Filters = [
-                            new ViewFilterDate<TEntity> {
+                            new ViewFilterDate<TEntityInterface> {
                                 From = DateTime.UtcNow.Date,
                             },
                         ],
@@ -690,14 +689,14 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
         TEntity sampleEntity = Store(EntityFactory);
         object? sampleValue = Evaluable.GetValue(sampleEntity);
 
-        ViewOutput<TEntity> qOut = await Depot.View(
-                new QueryInput<TEntity, ViewInput<TEntity>> {
+        ViewOutput<TEntityInterface> qOut = await Depot.View(
+                new QueryInput<TEntityInterface, ViewInput<TEntityInterface>> {
                     Parameters = new() {
                         Retroactive = false,
                         Range = 20,
                         Page = 1,
                         Filters = [
-                            new ViewFilterProperty<TEntity> {
+                            new ViewFilterProperty<TEntityInterface> {
                                 Operator = ViewFilterOperators.CONTAINS,
                                 Property = Evaluable.Name,
                                 Value = sampleValue,
@@ -722,12 +721,12 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
         TEntity[] entities = await Store(2, EntityFactory);
 
         List<object?> possibleValues = [];
-        List<IViewFilter<TEntity>> filters = [];
+        List<IViewFilter<TEntityInterface>> filters = [];
 
         foreach (TEntity entity in entities) {
             object? sampleValue = Evaluable.GetValue(entity);
             filters.Add(
-                    new ViewFilterProperty<TEntity> {
+                    new ViewFilterProperty<TEntityInterface> {
                         Operator = ViewFilterOperators.CONTAINS,
                         Property = Evaluable.Name,
                         Value = sampleValue,
@@ -735,14 +734,14 @@ public abstract class TestingDepotBase<TEntity, TDepot, TDatabase>
                 );
             possibleValues.Add(sampleValue);
         }
-        ViewOutput<TEntity> viewOutput = await Depot.View(
-                new QueryInput<TEntity, ViewInput<TEntity>> {
+        ViewOutput<TEntityInterface> viewOutput = await Depot.View(
+                new QueryInput<TEntityInterface, ViewInput<TEntityInterface>> {
                     Parameters = new() {
                         Retroactive = false,
                         Range = 20,
                         Page = 1,
                         Filters = [
-                            new ViewFilterLogical<TEntity>{
+                            new ViewFilterLogical<TEntityInterface>{
                                 Operator = ViewFilterLogicalOperators.OR,
                                 Filters = [..filters],
                             },
