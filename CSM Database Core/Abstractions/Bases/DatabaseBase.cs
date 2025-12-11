@@ -7,6 +7,7 @@ using CSM_Database_Core.Core.Utils;
 using CSM_Database_Core.Entities.Abstractions.Interfaces;
 
 using CSM_Foundation_Core.Abstractions.Bases;
+using CSM_Foundation_Core.Abstractions.Interfaces;
 using CSM_Foundation_Core.Core.Utils;
 
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +51,7 @@ public abstract partial class DatabaseBase<TDatabases>
     public DatabaseBase(DatabaseOptions<TDatabases> databaseOptions)
         : base(databaseOptions.DbContextOptions ?? new()) {
         DatabaseOptions = databaseOptions;
+
         ValidateDatabaseOptions();
     }
 
@@ -64,34 +66,6 @@ public abstract partial class DatabaseBase<TDatabases>
 
         DatabaseOptions.ConnectionOptions ??= DatabaseUtils.GetConnectionOptions(Sign, DatabaseOptions.ForTesting);
     }
-
-    public bool Validate(bool strict = true) {
-        bool logsOn = DatabaseOptions.EnableLogging;
-
-        if (logsOn) {
-            ConsoleUtils.Announce(
-                    $"Setting up ORM",
-                    new() {
-                        { "Database", GetType()?.Namespace ?? "---" },
-                        { "Base", nameof(DatabaseBase<TDatabases>) }
-                    }
-                );
-        }
-
-        if (Database.CanConnect()) {
-            if (logsOn)
-                ConsoleUtils.Success($"[{GetType().FullName}] ORM Set");
-
-            IEnumerable<string> pendingMigrations = Database.GetPendingMigrations();
-            if (pendingMigrations.Any()) {
-
-                if(strict)
-                    throw new Exception($"ORM ({GetType().FullName}) has pending migrations ({pendingMigrations.Count()})");
-
-                return false;
-            }
-            return ValidateSetsDefinitions(strict);
-        }
 
         try {
             Database.OpenConnection();
@@ -147,7 +121,7 @@ public abstract partial class DatabaseBase<TDatabases>
     /// <summary>
     ///     Evaluates if <see cref="DbSet{TEntity}"/> are correctly configured and translated to the internal framework handler.
     /// </summary>
-    public bool ValidateSetsDefinitions(bool strict = true) {
+    bool ValidateSetsDefinitions(bool strict = true) {
 
         bool logsOn = DatabaseOptions.EnableLogging;
         EntityBase[] sets = GetSetsDefinitions();
@@ -190,21 +164,66 @@ public abstract partial class DatabaseBase<TDatabases>
         return true;
     }
 
-    protected virtual void DesignEntity(EntityBase Entity, EntityTypeBuilder mBuilder) { }
+    public bool Validate(bool strict = true) {
+        bool logsOn = DatabaseOptions.EnableLogging;
 
-    protected virtual void DesignDb(ModelBuilder mBuilder) { }
+        if (logsOn) {
+            ConsoleUtils.Announce(
+                    $"Setting up ORM",
+                    new() {
+                        { "Database", GetType()?.Namespace ?? "---" },
+                        { "Base", nameof(DatabaseBase<TDatabases>) }
+                    }
+                );
+        }
 
-    #region EF Native Methods
+        if (Database.CanConnect()) {
+            if (logsOn)
+                ConsoleUtils.Success($"[{GetType().FullName}] ORM Set");
 
+            IEnumerable<string> pendingMigrations = Database.GetPendingMigrations();
+            if (pendingMigrations.Any()) {
+
+                if (strict)
+                    throw new Exception($"ORM ({GetType().FullName}) has pending migrations ({pendingMigrations.Count()})");
+
+                return false;
+            }
+            return ValidateSetsDefinitions(strict);
+        }
+
+        try {
+            Database.OpenConnection();
+            return true;
+        } catch (Exception ex) {
+
+            if (strict)
+                throw new Exception($"Invalid connection with Database ({GetType().FullName}) | {ex.InnerException?.Message}");
+
+            return false;
+        }
+    }
 
     /// <summary>
-    ///     This is overriden from <see cref="DatabaseBase{TDatabases}"/> to Configure an SQL Server Connection using
-    ///     <see cref="_connection"/> generated string, this natively has another behavior but using <see cref="DatabaseBase{TDatabases}"/>
-    ///     will automatically configure the SQL Server connection.
+    ///     Designs the current <paramref name="mBuilder"/> instance for the given <paramref name="entity"/>, overriding
+    ///     the current behavior.
     /// </summary>
-    /// <param name="optionsBuilder">
-    ///     Relations builder proxy object.
+    /// <param name="entity">
+    ///     Entity instance being designed.
     /// </param>
+    /// <param name="mBuilder">
+    ///     Global database model builder instance.
+    /// </param>
+    protected virtual void DesignEntity(EntityBase entity, EntityTypeBuilder mBuilder) { }
+
+    /// <summary>
+    ///     Designs the current <paramref name="mBuilder"/> instance for the database, overriding the current behavior.
+    /// </summary>
+    /// <param name="mBuilder">
+    ///     Global database model builder instance.
+    /// </param>
+    protected virtual void DesignDatabase(ModelBuilder mBuilder) { }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
         string connectionString = DatabaseOptions.ConnectionOptions!.GenerateConnectionString();
         optionsBuilder.UseSqlServer(connectionString);
@@ -218,8 +237,8 @@ public abstract partial class DatabaseBase<TDatabases>
                 ConsoleUtils.Warning(
                         $"Running EF Design Time Execution",
                         new Dictionary<string, object?> {
-                        { "Environment", envValue },
-                        { "Connection", connectionString },
+                            { "Environment", envValue },
+                            { "Connection", connectionString },
                         }
                     );
             }
@@ -228,7 +247,7 @@ public abstract partial class DatabaseBase<TDatabases>
 
     protected override void OnModelCreating(ModelBuilder mBuilder) {
 
-        DesignDb(mBuilder);
+        DesignDatabase(mBuilder);
 
         IEnumerable<IMutableEntityType> entityTypes = mBuilder.Model.GetEntityTypes();
         foreach (IMutableEntityType entityType in entityTypes) {
@@ -296,8 +315,6 @@ public abstract partial class DatabaseBase<TDatabases>
 
         base.OnModelCreating(mBuilder);
     }
-
-    #endregion
 }
 
 /// <inheritdoc cref="Entities.Abstractions.Bases.BEntity"/>
