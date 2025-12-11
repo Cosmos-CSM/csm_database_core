@@ -27,6 +27,6 @@ public interface IDepot<TEntity, TEntityInterface>
     , IDepotCreate<TEntity, TEntityInterface>
     , IDepotRead<TEntity, TEntityInterface>
     , IDepotUpdate<TEntity, TEntityInterface>
-    , IDepotDelete<TEntity>
+    , IDepotDelete<TEntity, TEntityInterface>
     where TEntity : class, TEntityInterface
     where TEntityInterface : IEntity { }
